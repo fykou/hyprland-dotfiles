@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-sudo pacman -S --needed --noconfirm wezterm
+sudo pacman -S --needed --noconfirm zsh wezterm starship
 
+if [[ ! -f "$HOME/.zshrc" ]]; then
+    echo "⚙️ Running zsh to initialize config files..."
+    zsh -c "exit"
+fi
+
+chsh -s /bin/zsh
+
+# Add starship
+ZSHRC="$HOME/.zshrc"
+LINE='eval "$(starship init zsh)"'
+
+# Add the line if it's not already present
+if ! grep -Fxq "$LINE" "$ZSHRC"; then
+    echo -e "\n# Added by Starship setup\n$LINE" >> "$ZSHRC"
+    echo "✅ Added to ~/.zshrc"
+else
+    echo "✅ Starship init already present in ~/.zshrc"
+fi
