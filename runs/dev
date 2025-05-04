@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install packages using paru
+paru -S --needed --noconfirm rider lua51 luarocks tldr fzf
+
+# Install NVM if not already installed
+if ! command -v nvm &> /dev/null; then
+  echo "Installing NVM..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+else
+  echo "NVM is already installed."
+fi
+
+# Install Deno if not already installed
+if ! command -v deno &> /dev/null; then
+  echo "Installing Deno..."
+  curl -fsSL https://deno.land/install.sh | sh
+else
+  echo "Deno is already installed."
+fi
+
