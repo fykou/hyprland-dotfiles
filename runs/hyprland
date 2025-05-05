@@ -1,57 +1,100 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-sudo pacman -S --needed --noconfirm hyprland nvidia nvidia-utils lib32-nvidia-utils egl-wayland noto-fonts
+# Install required packages
+paru -S --needed --noconfirm \
+    hyprland \
+    nvidia \
+    nvidia-utils \
+    lib32-nvidia-utils \
+    egl-wayland \
+    noto-fonts \
+    noto-fonts-cjk \
+    noto-fonts-emoji \
+    noto-fonts-extra
 
-# Modset for nvidia
-# Ensure the file exists
+# NVIDIA DRM modeset config: /etc/modprobe.d/nvidia.conf
 CONF_FILE="/etc/modprobe.d/nvidia.conf"
 LINE="options nvidia_drm modeset=1"
 
 if [ ! -f "$CONF_FILE" ]; then
-	echo "Creating $CONF_FILE"
-	echo "" | sudo tee "CONF_FILE" > /dev/null
-fi
-
-# Check if line already exists
-if ! grep -Pq "\|^s*${LINE// /\\s+}\s*$" "CONF_FILE"; then
-	echo "Adding '$LINE' to $CONF_FILE"
-	echo "$LINE" | sudo tee -a "$CONF_FILE" > /dev/null
+    echo "Creating $CONF_FILE"
+    echo "$LINE" | sudo tee "$CONF_FILE" > /dev/null
+    echo "Added line to $CONF_FILE: $LINE"
+elif ! grep -Pq "^\s*${LINE// /\\s+}\s*$" "$CONF_FILE"; then
+    echo "$LINE" | sudo tee -a "$CONF_FILE" > /dev/null
+    echo "Appended line to $CONF_FILE: $LINE"
 else
-	echo "Line already exists in $CONF_FILE"
+    echo "'$LINE' already exists in $CONF_FILE"
 fi
 
-
-# Enable KMS late loading
+# mkinitcpio.conf handling
 MKINITCONF="/etc/mkinitcpio.conf"
 MODULES_NEEDED=(nvidia nvidia_modset nvidia_uvm nvidia_drm)
-MODULE_LINE_PATTERN='^MODULES=\((.*)\)$'
+MODULES_UPDATED=false
+HOOKS_UPDATED=false
 
-# Read the current modules line
-current_line=$(grep "^MODULES=" "$MKINITCONF" || true)
-
-# Backup config
 sudo cp "$MKINITCONF" "$MKINITCONF.bak"
 
-# If line exists, check and update
-if [[ "$current_line"  =~ $MODULE_LINE_PATTERN ]]; then
-	current_modules="${BASH_REMATCH[1]}"
-	for mod in "${MODULES_NEEDED[@]}"; do
-		if ! grep -qw "$mod" <<< "$current_modules"; then
-			echo "Adding $mod to MODULES array"
-			current_modules="$current_modules $mod"
-		fi
-	done
-	new_line="MODULES=(${current_modules})"
-	sudo sed -i "s|^MODULES=.*|$new_line|" "$MKINITCONF"
+# --- MODULES ---
+if grep -q "^MODULES=" "$MKINITCONF"; then
+    current_line=$(grep "^MODULES=" "$MKINITCONF")
+    current_modules="${current_line#MODULES=(}"
+    current_modules="${current_modules%) }"
+
+    for mod in "${MODULES_NEEDED[@]}"; do
+        if ! grep -qw "$mod" <<< "$current_modules"; then
+            current_modules+=" $mod"
+            echo "$mod added to the MODULES array in $MKINITCONF"
+            MODULES_UPDATED=true
+        fi
+    done
+
+    if $MODULES_UPDATED; then
+        new_line="MODULES=(${current_modules})"
+        sudo sed -i "s|^MODULES=.*|$new_line|" "$MKINITCONF"
+    else
+        echo "'${MODULES_NEEDED[*]}' already present MODULES array in $MKINITCONF"
+    fi
 else
-	# MODULES line not found - add it
-	echo "MODULES=(${MODULES_NEEDED[*]})" | sudo tee -a "$MKINITCONF" > /dev/null
+    echo "Adding new MODULES line to $MKINITCONF"
+    echo "MODULES=(${MODULES_NEEDED[*]})" | sudo tee -a "$MKINITCONF" > /dev/null
+    for mod in "${MODULES_NEEDED[@]}"; do
+        echo "$mod added to the MODULES array in $MKINITCONF"
+    done
+    MODULES_UPDATED=true
 fi
 
-# Rebuild initramfs
-echo "Rebuilding initramfs..."
-sudo mkinitcpio -P
+# --- HOOKS ---
+if grep -q "^HOOKS=" "$MKINITCONF"; then
+    current_hooks_line=$(grep "^HOOKS=" "$MKINITCONF")
+    current_hooks="${current_hooks_line#HOOKS=(}"
+    current_hooks="${current_hooks%) }"
 
+    updated_hooks=""
+    for hook in $current_hooks; do
+        if [[ "$hook" != "kms" ]]; then
+            updated_hooks+="$hook "
+        else
+            echo "'kms' hook removed from HOOKS in $MKINITCONF"
+            HOOKS_UPDATED=true
+        fi
+    done
 
-# todo remove kms from initcpio hooks
+    updated_hooks=$(echo "$updated_hooks" | xargs)
+    if $HOOKS_UPDATED; then
+        new_hooks_line="HOOKS=($updated_hooks)"
+        sudo sed -i "s|^HOOKS=.*|$new_hooks_line|" "$MKINITCONF"
+    else
+        echo "'kms' not found in HOOKS in $MKINITCONF (as it should be)"
+    fi
+fi
+
+# --- Initramfs ---
+if $MODULES_UPDATED || $HOOKS_UPDATED; then
+    echo "Rebuilding initramfs due to changes in $MKINITCONF..."
+    sudo mkinitcpio -P
+else
+    echo "No changes made to $MKINITCONF; skipping initramfs rebuild."
+fi
+

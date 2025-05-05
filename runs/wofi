@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-sudo pacman -S --needed --noconfirm wofi
+sudo paru -S --needed --noconfirm wofi
 

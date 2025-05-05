@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-sudo pacman -S --needed --noconfirm btop openssh pavucontrol flatpak thunar ripgrep
-
+paru -S --needed --noconfirm \
+    btop \
+    openssh \
+    pavucontrol \
+    flatpak \
+    thunar \
+    ripgrep \
+    less \
+    libsecret \
+    gnome-keyring \
+    cliphist

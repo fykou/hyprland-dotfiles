@@ -6,26 +6,27 @@ TMP_DIR="$HOME/develop/.temp/paru-install"
 
 sudo pacman -S --needed --noconfirm base-devel git
 
-if command -V paru >/dev/null 2>&1; then
-	echo "paru is already installed" 
-	exit 0
+# Check if paru is already installed
+if command -v paru >/dev/null 2>&1; then
+    echo "paru is already installed"
+    exit 0
 fi
 
-echo "Cloning paru into: $TMP_DIR"
+echo "Cloning paru into $TMP_DIR"
 rm -rf "$TMP_DIR"
 git clone "$REPO_URL" "$TMP_DIR"
-
 
 cd "$TMP_DIR"
 makepkg -si --noconfirm
 
-cd ~
+# Cleanup
 rm -rf "$TMP_DIR"
-echo "Cleaned up temporary build files"
+echo "Removed temporary build directory: $TMP_DIR"
 
-if command -V paru >/dev/null 2>&1; then
-	echo "Paru successfully installed!"
+# Confirm installation
+if command -v paru >/dev/null 2>&1; then
+    echo "paru successfully installed"
 else
-	echo "Paru installation failed"
-	exit 1
+    echo "paru installation failed"
+    exit 1
 fi
