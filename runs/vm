@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Functions
+log() {
+    echo -e "\e[1;32m[INFO]\e[0m $*"
+}
+
+err() {
+    echo -e "\e[1;31m[ERROR]\e[0m $*" >&2
+    exit 1
+}
+
+check_virtualization_support() {
+    log "Checking for CPU virtualization support..."
+    if ! LC_ALL=C lscpu | grep -qE 'VT-x|AMD-V'; then
+        err "CPU does not support virtualization (VT-x or AMD-V not found). Exiting."
+    fi
+    log "CPU virtualization supported."
+}
+
+check_kvm_modules() {
+    log "Verifying KVM modules..."
+    if lsmod | awk '{print $1}' | grep -qE '^kvm_(intel|amd)$'; then
+        if lsmod | awk '{print $1}' | grep -q '^kvm$'; then
+            log "KVM modules are loaded."
+        else
+            err "kvm base module not loaded. Exiting."
+        fi
+    else
+        err "KVM module (kvm_intel or kvm_amd) not loaded. Exiting."
+    fi
+}
+
+install_packages() {
+    log "Installing required packages via paru..."
+    sudo paru -S --needed --noconfirm libvirt virt-manager qemu-full dnsmasq dmidecode
+}
+
+enable_services() {
+    log "Enabling and starting required services..."
+    sudo systemctl enable --now libvirtd.service virtlogd.service
+}
+
+add_user_to_group() {
+    local group="libvirt"
+    if groups "$USER" | grep -qw "$group"; then
+        log "User '$USER' is already in the '$group' group."
+    else
+        log "Adding user '$USER' to the '$group' group..."
+        sudo usermod -aG "$group" "$USER"
+        log "Please log out and log back in for group changes to take effect."
+    fi
+}
+
+configure_default_network() {
+    log "Configuring default libvirt network..."
+    if ! sudo virsh net-info default &>/dev/null; then
+        err "Default network does not exist. Exiting."
+    fi
+
+    if ! sudo virsh net-list --all | grep -qE '^ default.*active'; then
+        log "Starting default network..."
+        sudo virsh net-start default
+    else
+        log "Default network is already running."
+    fi
+
+    if ! sudo virsh net-autostart default &>/dev/null; then
+        log "Setting default network to autostart..."
+        sudo virsh net-autostart default
+    else
+        log "Default network already set to autostart."
+    fi
+}
+
+# Main Execution
+check_virtualization_support
+check_kvm_modules
+install_packages
+enable_services
+add_user_to_group
+configure_default_network
+
+log "KVM virtualization setup complete."
+

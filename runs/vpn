@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+paru -S --needed --noconfirm \
+    wireguard-tools \
+    network-manager-applet \
+    proton-vpn-gtk-app
