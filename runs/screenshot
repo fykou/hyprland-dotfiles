@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+paru -S --needed --noconfirm \
+    hyprshot \
+    jq \
+    grim \
+    slurp \
+    wl-clipboard \
+    libnotify \
+    dunst

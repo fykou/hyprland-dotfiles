@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-paru -S --needed --noconfirm rider lua51 luarocks tldr fzf
+paru -S --needed --noconfirm rider lua51 luarocks tldr fzf postman-bin dotnet-sdk dotnet-runtime
 
 # Install NVM if not already installed
 if ! command -v nvm &> /dev/null; then

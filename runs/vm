@@ -34,7 +34,16 @@ check_kvm_modules() {
 
 install_packages() {
     log "Installing required packages via paru..."
-    sudo paru -S --needed --noconfirm libvirt virt-manager qemu-full dnsmasq dmidecode
+    sudo paru -S --needed --noconfirm \
+        libvirt \
+        virt-manager \
+        bridge-utils \
+        qemu-full \
+        dnsmasq \
+        dmidecode \
+        edk2-ovmf \
+        iptables
+        # openbsd-netcat
 }
 
 enable_services() {

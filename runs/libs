@@ -11,4 +11,5 @@ paru -S --needed --noconfirm \
     less \
     libsecret \
     gnome-keyring \
-    cliphist
+    cliphist \
+    unzip
