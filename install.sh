@@ -19,7 +19,7 @@ EOF
 #--------------------------------#
 scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
-if ! source "${scrDir}/global_fn.sh"; then
+if ! source "${scrDir}/Scripts/global_fn.sh"; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
@@ -32,7 +32,7 @@ flg_Restore=0
 flg_Service=0
 flg_DryRun=0
 flg_Shell=0
-flg_Nvidia=1
+flg_Nvidia=0
 flg_ThemeInstall=1
 
 while getopts idrstmnh: RunStep; do
@@ -91,7 +91,7 @@ if [ $flg_Install -eq 1 ] && [ $flg_Restore -eq 1 ]; then
 |_|
 EOF
 
-    "${scrDir}/install_pre.sh"
+    "${scrDir}/Scripts/install_pre.sh"
 fi
 
 if [ $flg_Install -eq 1 ]; then
@@ -108,6 +108,7 @@ EOF
     shift $((OPTIND - 1))
     custom_pkg=$1
     cp "${scrDir}/pkg_core.lst" "${scrDir}/install_pkg.lst"
+    mkdir -p "${cacheDir}/logs/${OKEF_LOG}"
     trap 'mv "${scrDir}/install_pkg.lst" "${cacheDir}/logs/${OKEF_LOG}/install_pkg.lst"' EXIT
 
     if [ -f "${custom_pkg}" ] && [ -n "${custom_pkg}" ]; then
@@ -141,7 +142,7 @@ EOF
         exit 1
     fi
 
-    [ $flg_DryRun -eq 1 ] || "${scrDir}/install_pkg.sh" "${scrDir}/install_pkg.lst"
+    [ $flg_DryRun -eq 1 ] || "${scrDir}/Scripts/install_pkg.sh" "${scrDir}/install_pkg.lst"
 fi
 
 if [ $flg_Restore -eq 1 ]; then
@@ -153,26 +154,26 @@ if [ $flg_Restore -eq 1 ]; then
 |_| |___|___|_| |___|_| |_|_|_|_  |
                               |___|
 
-EOF
-
-    if [ "$flg_DryRun" -ne 1 ] && [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-        hyprctl keyword misc:disable_autoreload 1 -q
-    fi
-
-    "${scrDir}/restore_fnt.sh"
-    "${scrDir}/restore_cfg.sh"
-    "${scrDir}/restore_thm.sh"
-    print_log -g "[generate] " "cache ::" "Wallpapers..."
-    if [ "$flg_DryRun" -ne 1 ]; then
-        "$HOME/.local/lib/okef/swwwallcache.sh" -t ""
-        "$HOME/.local/lib/okef/theme.switch.sh" -q || true
-        echo "[install] reload :: Hyprland"
-    fi
-fi
-
-if [ $flg_Install -eq 1 ] && [ $flg_Restore -eq 1 ]; then
-    cat <<"EOF"
-
+# EOF
+#
+#     if [ "$flg_DryRun" -ne 1 ] && [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+#         hyprctl keyword misc:disable_autoreload 1 -q
+#     fi
+#
+#     "${scrDir}/restore_fnt.sh"
+#     "${scrDir}/restore_cfg.sh"
+#     "${scrDir}/restore_thm.sh"
+#     print_log -g "[generate] " "cache ::" "Wallpapers..."
+#     if [ "$flg_DryRun" -ne 1 ]; then
+#         "$HOME/.local/lib/okef/swwwallcache.sh" -t ""
+#         "$HOME/.local/lib/okef/theme.switch.sh" -q || true
+#         echo "[install] reload :: Hyprland"
+#     fi
+# fi
+#
+# if [ $flg_Install -eq 1 ] && [ $flg_Restore -eq 1 ]; then
+#     cat <<"EOF"
+#
              _      _         _       _ _
  ___ ___ ___| |_   |_|___ ___| |_ ___| | |
 | . | . |_ -|  _|  | |   |_ -|  _| .'| | |
@@ -181,7 +182,7 @@ if [ $flg_Install -eq 1 ] && [ $flg_Restore -eq 1 ]; then
 
 EOF
 
-    "${scrDir}/install_pst.sh"
+    "${scrDir}/Scripts/install_pst.sh"
 fi
 
 if [ $flg_Service -eq 1 ]; then

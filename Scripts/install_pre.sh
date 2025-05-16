@@ -8,6 +8,8 @@ fi
 
 flg_DryRun=${flg_DryRun:-0}
 
+regen_required=0  # Flag to determine if mkinitcpio needs to be run
+
 # systemd-boot configuration
 if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | awk '{if ($1 == "Product:") print $2}')" == "systemd-boot" ]; then
     print_log -sec "bootloader" -stat "detected" "systemd-boot"
@@ -17,6 +19,7 @@ if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | a
 
     if [ "$entry_count" -ne "$total_count" ]; then
         print_log -g "[bootloader] " -b " :: " "nvidia detected, updating boot options..."
+        regen_required=1
 
         find /boot/loader/entries/ -type f -name "*.conf" | while read -r imgconf; do
             sudo cp "${imgconf}" "${imgconf}.okef.bkp"
@@ -37,19 +40,32 @@ NVEA="/etc/modprobe.d/nvidia.conf"
 if [[ ! -f "$NVEA" ]]; then
     echo "options nvidia_drm modeset=1 fbdev=1" | sudo tee "$NVEA"
     print_log -sec "kernel modules" -stat "configured" "Added nvidia_drm options to modprobe.d"
+    regen_required=1
 fi
 
-# Regenerate initramfs
-print_log -sec "initramfs" -stat "regenerating" "Running mkinitcpio..."
-sudo mkinitcpio -P
-
-# Optionally blacklist Nouveau
-if command -v gum &>/dev/null && gum confirm "Would you like to blacklist the Nouveau driver?"; then
-    echo "blacklist nouveau" | sudo tee /etc/modprobe.d/nouveau.conf
-    echo "install nouveau /bin/true" | sudo tee /etc/modprobe.d/blacklist.conf
-    print_log -sec "nouveau" -stat "blacklisted" "Nouveau driver has been disabled"
+# Check if Nouveau is already blacklisted
+if grep -q "^blacklist nouveau" /etc/modprobe.d/*.conf 2>/dev/null && \
+   grep -q "^install nouveau /bin/true" /etc/modprobe.d/*.conf 2>/dev/null; then
+    print_log -sec "nouveau" -stat "skipped" "Nouveau driver is already disabled..."
 else
-    print_log -sec "nouveau" -stat "skipped" "Nouveau driver not blacklisted"
+    read -p "Would you like to blacklist the Nouveau driver? (y/n): " answer
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+        echo "blacklist nouveau" | sudo tee /etc/modprobe.d/nouveau.conf
+        echo "install nouveau /bin/true" | sudo tee /etc/modprobe.d/blacklist.conf
+        print_log -sec "nouveau" -stat "blacklisted" "Nouveau driver has been disabled"
+        regen_required=1
+    else
+        print_log -sec "nouveau" -stat "skipped" "Nouveau driver not blacklisted"
+    fi
+fi
+
+
+# Regenerate initramfs if changes were made
+if [ "$regen_required" -eq 1 ]; then
+    print_log -sec "initramfs" -stat "regenerating" "Running mkinitcpio..."
+    sudo mkinitcpio -P
+else
+    print_log -sec "initramfs" -stat "skipped" "No changes requiring regeneration of initramfs..."
 fi
 
 

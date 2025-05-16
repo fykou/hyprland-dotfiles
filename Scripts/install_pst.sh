@@ -57,7 +57,7 @@ else
 fi
 
 # shell
-"${scrDir}/restore_shl.sh"
+#"${scrDir}/restore_shl.sh"already_blacklisted
 
 # flatpak
 if ! pkg_installed flatpak; then

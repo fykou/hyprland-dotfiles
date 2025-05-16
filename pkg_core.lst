@@ -1,85 +1,92 @@
-# --------------------------------------------------- // System
-pipewire                                               # audio/video server
-; pipewire-alsa                                          # pipewire alsa client
-; pipewire-audio                                         # pipewire audio client
-; pipewire-jack                                          # pipewire jack client
-; pipewire-pulse                                         # pipewire pulseaudio client
-; gst-plugin-pipewire                                    # pipewire gstreamer client
-; wireplumber                                            # pipewire session manager
-pavucontrol                                            # pulseaudio volume control
-; pamixer                                                # pulseaudio cli mixer
-networkmanager                                         # network manager
-; network-manager-applet                                 # network manager system tray utility
-bluez                                                  # bluetooth protocol stack
-bluez-utils                                            # bluetooth utility cli
-blueman                                                # bluetooth manager gui
-brightnessctl                                          # screen brightness control
-udiskie                                                # manage removable media
+# --------------------------------------------------- // Core System Utilities
+bluez                    # Bluetooth protocol stack
+bluez-utils             # Bluetooth CLI utilities
+brightnessctl           # Screen brightness control
+libnotify               # Desktop notification support
+networkmanager          # Network manager daemon
+pavucontrol             # PulseAudio volume control GUI
+pipewire                # Audio/video server
+# pipewire-alsa          # ALSA client for PipeWire
+# pipewire-audio         # Audio client for PipeWire
+# pipewire-jack          # JACK client for PipeWire
+# pipewire-pulse         # PulseAudio client for PipeWire
+# wireplumber            # PipeWire session manager
+# gst-plugin-pipewire    # GStreamer plugin for PipeWire
+udiskie                 # Automount and manage removable drives
 
-# --------------------------------------------------- // Display Manager
-; sddm                                                   # display manager for KDE plasma
-; qt5-quickcontrols                                      # for sddm theme ui elements
-; qt5-quickcontrols2                                     # for sddm theme ui elements
-; qt5-graphicaleffects                                   # for sddm theme effects
+# --------------------------------------------------- // Display & Session Management
+# sddm                   # Display/login manager for KDE Plasma
+# qt5-quickcontrols      # UI elements for SDDM themes
+# qt5-quickcontrols2     # Additional UI elements for SDDM themes
+# qt5-graphicaleffects   # Visual effects for SDDM themes
 
-# --------------------------------------------------- // Window Manager
-hyprland                                               # wlroots-based wayland compositor
-dunst                                                  # notification daemon
-rofi-wayland                                           # application launcher
-waybar                                                 # system bar
-; swww                                                   # wallpaper
-hyprlock                                               # lock screen
-wlogout                                                # logout menu
-; grim                                                   # screenshot tool
-; hyprpicker                                             # color picker
-; slurp                                                  # region select for screenshot/screenshare
-; satty                                                  # Modern Screenshot Annotation
-; cliphist                                               # clipboard manager
-hyprsunset                                             # blue light filter
-
-# --------------------------------------------------- // Dependencies
-polkit-gnome                                           # authentication agent
-; xdg-desktop-portal-hyprland                            # xdg desktop portal for hyprland
-; xdg-desktop-portal-gtk                                 # file picker and dbus  integration
-; xdg-user-dirs                                          # Manage user directories like ~/Desktop and ~/Music
-pacman-contrib                                         # for system update check
-; parallel                                               # for parallel processing
-; jq                                                     # for json processing
-; imagemagick                                            # for image processing
-qt5-imageformats                                       # for dolphin image thumbnails
-ffmpegthumbs                                           # for dolphin video thumbnails
-kde-cli-tools                                          # for dolphin file type defaults
-libnotify                                              # for notifications
-noto-fonts-emoji                                       # emoji font
-
-# --------------------------------------------------- // Theming
-; nwg-look                                               # gtk configuration tool
-; qt5ct                                                  # qt5 configuration tool
-; qt6ct                                                  # qt6 configuration tool
-; kvantum                                                # svg based qt6 theme engine
-; kvantum-qt5                                            # svg based qt5 theme engine
-; qt5-wayland                                            # wayland support in qt5
-; qt6-wayland                                            # wayland support in qt6
+# --------------------------------------------------- // Wayland Compositor & Desktop Environment
+hyprland                # Wayland compositor (Hyprland)
+dunst                   # Notification daemon
+grim                    # Screenshot utility
+hypridle                # Idle watcher for Hyprland
+hyprlock                # Lock screen for Hyprland
+hyprshot                # Screenshot utility for Hyprland
+hyprsunset              # Blue light filter for Wayland
+rofi-wayland            # Application launcher for Wayland
+slurp                   # Region selector for screenshot/screenshare
+waybar                  # System bar for Wayland
+wlogout                 # Logout menu for Wayland
+# hyprpicker            # Color picker for Wayland
+# satty                 # Screenshot annotation tool
+cliphist                # Clipboard manager for Wayland
+# swww                  # Wallpaper daemon for Wayland
 
 # --------------------------------------------------- // Applications
-; firefox                                                # browser
-; kitty                                                  # terminal
-dolphin                                                # kde file manager
-ark                                                    # kde file archiver
-unzip                                                  # extracting zip files
-; vim                                                    # terminal text editor
-; code                                                   # ide text editor
-nwg-displays                                           # monitor management utility
-fzf                                                    # Command-line fuzzy finder
+ark                     # KDE archiving tool
+dolphin                 # KDE file manager
+fzf                     # Command-line fuzzy finder
+neovim                  # Terminal-based text editor
+nwg-displays            # Monitor configuration GUI (Wayland)
+unzip                   # ZIP archive extractor
+# code                  # Visual Studio Code IDE
+# firefox               # Web browser
+# kitty                 # GPU-based terminal emulator
 
-# --------------------------------------------------- // Shell
-; eza|zsh                                                # file lister for zsh
-; zsh-theme-powerlevel10k-git|zsh                        # Powerlevel10k is a theme for Zsh. It emphasizes speed, flexibility and out-of-the-box experience.
-starship|zsh                                           # customizable shell prompt written in Rust
-; # starship-git                                         # The cross-shell prompt for astronauts
-; eza|fish                                               # file lister for fish
-; starship|fish                                          # customizable shell prompt
-fastfetch                                              # system information fetch tool
+# --------------------------------------------------- // Developer & Power Tools
+btop                    # Resource monitor with modern UI
+fastfetch               # System info fetch tool (like neofetch)
+jq                      # Command-line JSON processor
+less                    # Terminal pager
+lua51                   # Lua 5.1 interpreter
+luarocks                # Lua package manager
+openssh                 # SSH client and tools
+pacman-contrib          # Pacman extensions (e.g., update checker)
+ripgrep                 # Fast search tool (grep alternative)
+tldr                    # Simplified and community-driven man pages
+# imagemagick           # Image manipulation tool
+# parallel              # Shell tool for parallel execution
 
-# --------------------------------------------------- // HyDE
-hypridle                                               # idle daemon
+# --------------------------------------------------- // Shell Enhancements
+starship|zsh            # Fast, customizable shell prompt (Zsh)
+wezterm                 # Teminal emulator
+# starship|fish          # Fast, customizable shell prompt (Fish)
+# starship-git           # Development version of Starship
+# eza|zsh                # Modern replacement for ls (Zsh)
+# eza|fish               # Modern replacement for ls (Fish)
+# zsh-theme-powerlevel10k-git|zsh  # Powerlevel10k theme for Zsh
+
+# --------------------------------------------------- // Appearance & Theming
+# kvantum               # SVG-based Qt theme engine
+# kvantum-qt5           # Qt5 support for Kvantum
+# nwg-look              # GTK appearance configuration
+# qt5-wayland           # Wayland support in Qt5
+# qt6-wayland           # Wayland support in Qt6
+# qt5ct                 # Qt5 appearance configuration
+# qt6ct                 # Qt6 appearance configuration
+
+# --------------------------------------------------- // Desktop Integration & Portals
+gnome-keyring           # Secret storage service
+libsecret               # Secret storage API
+qt5-imageformats        # Support for additional image formats in Qt5
+ffmpegthumbs            # Video thumbnail support for Dolphin
+kde-cli-tools           # File association config tools (used by Dolphin)
+# xdg-desktop-portal-hyprland  # XDG portal backend for Hyprland
+# xdg-desktop-portal-gtk       # GTK file picker and DBus integration
+# xdg-user-dirs                # Standard user directories manager (e.g., ~/Desktop)
+
