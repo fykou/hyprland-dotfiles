@@ -1,0 +1,32 @@
+# --------------------------------------------------- // Core System Tools (Optional)
+# ddcui                    # GUI to control brightness on external monitors
+# downgrade                # CLI tool to downgrade installed packages
+# gestures                 # GUI frontend for libinput-gestures
+# hyprgui-bin              # GUI config tool for Hyprland (may overwrite user config, recently missing)
+# libinput-gestures        # Configure touchpad gestures using libinput
+# python-requests|wttrbar  # Dependency for wttrbar
+# trash-cli-git            # CLI utility to move files to trash
+# wttrbar                  # Display weather in Waybar or other bars
+
+
+
+wireguard-tools
+network-manager-applet
+proton-vpn-gtk-app
+standardnotes-bin
+postman-bin
+dotnet-sdk-8.0
+dotnet-runtime-8.0
+aspnet-runtime-8.0
+rider
+
+# TODO
+# if ! command -v deno &> /dev/null; then
+#     echo "Installing Deno..."
+#     curl -fsSL https://deno.land/install.sh | sh
+# else
+#     echo "Deno is already installed."
+# fi
+
+# git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+#  ~/.local/share/nvim/site/pack/packer/start/packer.nvim

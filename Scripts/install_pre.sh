@@ -69,7 +69,7 @@ else
 fi
 
 
-# pacman
+# Pimp pacman
 if [ -f /etc/pacman.conf ] && [ ! -f /etc/pacman.conf.okef.bkp ]; then
     print_log -g "[PACMAN] " -b "modify :: " "adding extra spice to pacman..."
 
