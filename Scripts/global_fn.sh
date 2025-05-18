@@ -2,8 +2,7 @@
 
 set -e
 
-scrDir="$(dirname "$(realpath "$0")")"
-cloneDir="$(dirname "${scrDir}")" # fallback, we will use CLONE_DIR now
+cloneDir="$(dirname "${SCR_DIR}")" # fallback, we will use CLONE_DIR now
 cloneDir="${CLONE_DIR:-${cloneDir}}"
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/okef"
@@ -72,7 +71,7 @@ nvidia_detect() {
     fi
     if [ "${1}" == "--drivers" ]; then
         while read -r -d ' ' nvcode; do
-            awk -F '|' -v nvc="${nvcode}" 'substr(nvc,1,length($3)) == $3 {split(FILENAME,driver,"/"); print driver[length(driver)],"\nnvidia-utils"}' "${scrDir}"/nvidia-db/nvidia*dkms
+            awk -F '|' -v nvc="${nvcode}" 'substr(nvc,1,length($3)) == $3 {split(FILENAME,driver,"/"); print driver[length(driver)],"\nnvidia-utils"}' "${SCR_DIR}"/nvidia-db/nvidia*dkms
         done <<<"${dGPU[@]}"
         return 0
     fi

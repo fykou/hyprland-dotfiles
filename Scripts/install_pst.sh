@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-#|---/ /+--------------------------------------+---/ /|#
-#|--/ /-| Script to apply post install configs |--/ /-|#
-#|-/ /--| Prasanth Rangan                      |-/ /--|#
-#|/ /---+--------------------------------------+/ /---|#
 
-scrDir=$(dirname "$(realpath "$0")")
-if ! source "${scrDir}/global_fn.sh"; then
+baseDir=$(dirname "$(realpath "$0")")
+
+if ! source "${SCR_DIR}/Scripts/global_fn.sh"; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
@@ -57,22 +54,25 @@ else
 fi
 
 # shell
-#"${scrDir}/restore_shl.sh"already_blacklisted
+#"${baseDir}/restore_shl.sh"already_blacklisted
 
 # flatpak
-if ! pkg_installed flatpak; then
+if pkg_installed flatpak; then
+
+
+
     print_log -r "[FLATPAK]" -b "list :: " "flatpak application"
-    awk -F '#' '$1 != "" {print "["++count"]", $1}' "${scrDir}/pkg_flat.lst"
+    awk -F '#' '$1 != "" {print "["++count"]", $1}' "${SCR_DIR}/pkg_flat.lst"
     prompt_timer 60 "Install these flatpaks? [Y/n]"
     fpkopt=${PROMPT_INPUT,,}
 
     if [ "${fpkopt}" = "y" ]; then
         print_log -g "[FLATPAK]" -b "install :: " "flatpaks"
-        "${scrDir}/extra/install_fpk.sh"
+        "${baseDir}/install_fpk.sh"
     else
         print_log -y "[FLATPAK]" -b "skip :: " "flatpak installation"
     fi
 
-else
-    print_log -y "[FLATPAK]" -b " :: " "flatpak is already installed"
+# else
+#     print_log -y "[FLATPAK]" -b " :: " "flatpak is already installed"
 fi

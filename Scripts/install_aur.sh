@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-scrDir=$(dirname "$(realpath "$0")")
 aurhlpr="${1:-paru}"
 
-if ! source "${scrDir}/global_fn.sh"; then
+if ! source "${SCR_DIR}/Scripts/global_fn.sh"; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi

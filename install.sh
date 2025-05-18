@@ -17,9 +17,10 @@ EOF
 #--------------------------------#
 # import variables and functions #
 #--------------------------------#
-scrDir="$(dirname "$(realpath "$0")")"
-# shellcheck disable=SC1091
-if ! source "${scrDir}/Scripts/global_fn.sh"; then
+SCR_DIR="$(dirname "$(realpath "$0")")"
+export SCR_DIR
+
+if ! source "${SCR_DIR}/Scripts/global_fn.sh"; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
@@ -91,7 +92,7 @@ if [ $flg_Install -eq 1 ] && [ $flg_Restore -eq 1 ]; then
 |_|
 EOF
 
-    "${scrDir}/Scripts/install_pre.sh"
+    "${SCR_DIR}/Scripts/install_pre.sh"
 fi
 
 if [ $flg_Install -eq 1 ]; then
@@ -107,21 +108,21 @@ EOF
 
     shift $((OPTIND - 1))
     custom_pkg=$1
-    cp "${scrDir}/pkg_core.lst" "${scrDir}/install_pkg.lst"
+    cp "${SCR_DIR}/pkg_core.lst" "${SCR_DIR}/install_pkg.lst"
     mkdir -p "${cacheDir}/logs/${OKEF_LOG}"
-    trap 'mv "${scrDir}/install_pkg.lst" "${cacheDir}/logs/${OKEF_LOG}/install_pkg.lst"' EXIT
+    trap 'mv "${SCR_DIR}/install_pkg.lst" "${cacheDir}/logs/${OKEF_LOG}/install_pkg.lst"' EXIT
 
     if [ -f "${custom_pkg}" ] && [ -n "${custom_pkg}" ]; then
-        cat "${custom_pkg}" >>"${scrDir}/install_pkg.lst"
+        cat "${custom_pkg}" >>"${SCR_DIR}/install_pkg.lst"
     fi
-    echo -e "\n#user packages" >>"${scrDir}/install_pkg.lst"
+    echo -e "\n#user packages" >>"${SCR_DIR}/install_pkg.lst"
 
     if nvidia_detect; then
         if [ $flg_Nvidia -eq 1 ]; then
             cat /usr/lib/modules/*/pkgbase | while read -r kernel; do
-                echo "${kernel}-headers" >>"${scrDir}/install_pkg.lst"
+                echo "${kernel}-headers" >>"${SCR_DIR}/install_pkg.lst"
             done
-            nvidia_detect --drivers >>"${scrDir}/install_pkg.lst"
+            nvidia_detect --drivers >>"${SCR_DIR}/install_pkg.lst"
         else
             print_log -warn "Nvidia" " :: " "Nvidia GPU detected but ignored..."
         fi
@@ -134,15 +135,15 @@ EOF
     print_log -sec "AUR" -stat "Using AUR helper :: " "paru"
 
     export myShell="zsh"
-    echo "zsh" >>"${scrDir}/install_pkg.lst"
+    echo "zsh" >>"${SCR_DIR}/install_pkg.lst"
     print_log -sec "shell" -stat "Using shell :: " "zsh"
 
-    if ! grep -q "^#user packages" "${scrDir}/install_pkg.lst"; then
+    if ! grep -q "^#user packages" "${SCR_DIR}/install_pkg.lst"; then
         print_log -sec "pkg" -crit "No user packages found..." "Log file at ${cacheDir}/logs/${OKEF_LOG}/install.sh"
         exit 1
     fi
 
-    [ $flg_DryRun -eq 1 ] || "${scrDir}/Scripts/install_pkg.sh" "${scrDir}/install_pkg.lst"
+    [ $flg_DryRun -eq 1 ] || "${SCR_DIR}/Scripts/install_pkg.sh" "${SCR_DIR}/install_pkg.lst"
 fi
 
 if [ $flg_Restore -eq 1 ]; then
@@ -160,9 +161,9 @@ EOF
         hyprctl keyword misc:disable_autoreload 1 -q
     fi
 
-    # "${scrDir}/restore_fnt.sh"
-    "${scrDir}/Scripts/restore_cfg.sh"
-    # "${scrDir}/restore_thm.sh"
+    # "${SCR_DIR}/Scripts/restore_fnt.sh"
+    "${SCR_DIR}/Scripts/restore_cfg.sh"
+    # "${SCR_DIR}/restore_thm.sh"
     print_log -g "[generate] " "cache ::" "Wallpapers..."
     # if [ "$flg_DryRun" -ne 1 ]; then
     #     "$HOME/.local/lib/okef/swwwallcache.sh" -t ""
@@ -182,7 +183,7 @@ if [ $flg_Install -eq 1 ] && [ $flg_Restore -eq 1 ]; then
 
 EOF
 
-    "${scrDir}/Scripts/install_pst.sh"
+    "${SCR_DIR}/Scripts/install_pst.sh"
 fi
 
 if [ $flg_Service -eq 1 ]; then
@@ -205,20 +206,20 @@ EOF
                 sudo systemctl start "${serviceChk}.service"
             fi
         fi
-    done <"${scrDir}/system_ctl.lst"
+    done <"${SCR_DIR}/system_ctl.lst"
 fi
 
 if [ $flg_Install -eq 1 ]; then
     print_log -stat "\nInstallation" "completed"
 fi
 print_log -stat "Log" "View logs at ${cacheDir}/logs/${OKEF_LOG}"
-if [ $flg_Install -eq 1 ] || [ $flg_Restore -eq 1 ] || [ $flg_Service -eq 1 ]; then
-    print_log -stat "Okef" "Do you want to reboot the system? (y/N)"
-    read -r answer
-    if [[ "$answer" == [Yy] ]]; then
-        echo "Rebooting system"
-        systemctl reboot
-    else
-        echo "The system will not reboot"
-    fi
-fi
+# if [ $flg_Install -eq 1 ] || [ $flg_Restore -eq 1 ] || [ $flg_Service -eq 1 ]; then
+#     print_log -stat "Okef" "Do you want to reboot the system? (y/N)"
+#     read -r answer
+#     if [[ "$answer" == [Yy] ]]; then
+#         echo "Rebooting system"
+#         systemctl reboot
+#     else
+#         echo "The system will not reboot"
+#     fi
+# fi

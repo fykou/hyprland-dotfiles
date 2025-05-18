@@ -30,8 +30,8 @@ B = Backup - Backup the target
 
  Hyde core files 
 # P|${HOME}/.config/hyde|config.toml|hyprland
-# P|${HOME}/.config/hypr|hyde.conf workflows.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
-# P|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
+S|${HOME}/.config/hypr|main.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
+S|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
 # P|${HOME}/.config/hypr/themes|theme.conf wallbash.conf colors.conf|hyprland
 # S|${HOME}/.config/systemd|user|systemd
 # P|${HOME}/.local/state/hyde|hyprland.conf|hyprland
@@ -58,8 +58,8 @@ S|${HOME}/.config/hypr|hyprland.conf|hyprland
 # P|${HOME}/.config/VSCodium/User|settings.json|vscodium
 
  Bar 
-# P|${HOME}/.config/waybar|config.ctl|waybar
-# S|${HOME}/.config/waybar|modules config.jsonc theme.css style.css|waybar
+S|${HOME}/.config/waybar|config.ctl|waybar
+S|${HOME}/.config/waybar|modules config.jsonc theme.css style.css|waybar
 
  Terminal 
 # P|${HOME}/.config|lsd|lsd
@@ -72,11 +72,11 @@ S|${HOME}/.config/hypr|hyprland.conf|hyprland
  Shell 
 # P|${HOME}|.zshrc .user.zsh|zsh
 # P|${HOME}|.p10k.zsh|zsh zsh-theme-powerlevel10k
-P|${HOME}/.config/starship|starship.toml|starship
+S|${HOME}/.config/starship|starship.toml|starship
 # S|${HOME}|.zshenv|zsh
 
  Vim 
-P|${HOME}/.config|nvim|neovim lua51 luarocks ripgrep
+S|${HOME}/.config|nvim|neovim lua51 luarocks ripgrep
 # S|${HOME}/.config/vim/colors|wallbash.vim|vim
 # S|${HOME}/.config/vim|hyde.vim|vim
 
@@ -101,19 +101,19 @@ P|${HOME}/.config|nvim|neovim lua51 luarocks ripgrep
 # P|${HOME}/.config|electron-flags.conf|electron
 
  Notifications 
-# S|${HOME}/.config|dunst|dunst
+S|${HOME}/.config|dunst|dunst
 
  Gaming 
 # S|${HOME}/.config|MangoHud|mangohud
 
  Launcher 
-# P|${HOME}/.config|rofi|rofi
+S|${HOME}/.config|rofi|rofi
 # S|${HOME}/.config|wlogout|wlogout
 
  Lock Screen 
-# S|${HOME}/.config|swaylock|swaylock-effects
-# P|${HOME}/.config/hypr|hyprlock.conf|hyprlock
-# S|${HOME}/.config/hypr|hyprlock|hyprlock
+S|${HOME}/.config|swaylock|swaylock-effects
+S|${HOME}/.config/hypr|hyprlock.conf|hyprlock
+S|${HOME}/.config/hypr|hyprlock|hyprlock
 
  Idle daemon 
-# P|${HOME}/.config/hypr|hypridle.conf|hypridle
+S|${HOME}/.config/hypr|hypridle.conf|hypridle

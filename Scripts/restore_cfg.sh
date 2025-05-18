@@ -163,19 +163,23 @@ deploy_psv() {
 log_section="deploy"
 flg_DryRun=${flg_DryRun:-0}
 
-scrDir=$(dirname "$(realpath "$0")")
-if ! source "${scrDir}/global_fn.sh"; then
+
+baseDir=$(dirname "$(realpath "$0")")
+
+if ! source "${SCR_DIR}/Scripts/global_fn.sh"; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
 
-[ -f "${scrDir}/restore_cfg.lst" ] && defaultLst="restore_cfg.lst"
-[ -f "${scrDir}/restore_cfg.psv" ] && defaultLst="restore_cfg.psv"
-[ -f "${scrDir}/restore_cfg.json" ] && defaultLst="restore_cfg.json"
-[ -f "${scrDir}/${USER}-restore_cfg.psv" ] && defaultLst="$USER-restore_cfg.psv"
+echo "${baseDir}"
 
-CfgLst="${1:-"${scrDir}/${defaultLst}"}"
-CfgDir="${2:-${cloneDir}/Configs}"
+[ -f "${baseDir}/restore_cfg.lst" ] && defaultLst="restore_cfg.lst"
+[ -f "${baseDir}/restore_cfg.psv" ] && defaultLst="restore_cfg.psv"
+[ -f "${baseDir}/restore_cfg.json" ] && defaultLst="restore_cfg.json"
+[ -f "${baseDir}/${USER}-restore_cfg.psv" ] && defaultLst="$USER-restore_cfg.psv"
+
+CfgLst="${1:-"${baseDir}/${defaultLst}"}"
+CfgDir="${2:-${SCR_DIR}/Configs}"
 ThemeOverride="${3:-}"
 
 if [ ! -f "${CfgLst}" ] || [ ! -d "${CfgDir}" ]; then

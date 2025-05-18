@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-scrDir=$(dirname "$(realpath "$0")")
-if ! source "${scrDir}/global_fn.sh"; then
+
+baseDir=$(dirname "$(realpath "$0")")
+
+
+if ! source "${SCR_DIR}/Scripts/global_fn.sh"; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
@@ -9,9 +12,9 @@ fi
 flg_DryRun=${flg_DryRun:-0}
 export log_section="package"
 
-"${scrDir}/install_aur.sh" "${getAur}" 2>&1
+"${baseDir}/install_aur.sh" "${getAur}" 2>&1
 chk_list "aurhlpr" "${aurList[@]}"
-listPkg="${1:-"${scrDir}/pkg_core.lst"}"
+listPkg="${1:-"${srcDir}/pkg_core.lst"}"
 archPkg=()
 aurhPkg=()
 ofs=$IFS
@@ -20,9 +23,9 @@ IFS='|'
 #-----------------------------#
 # remove blacklisted packages #
 #-----------------------------#
-if [ -f "${scrDir}/pkg_black.lst" ]; then
-    grep -v -f <(grep -v '^#' "${scrDir}/pkg_black.lst" | sed 's/#.*//;s/ //g;/^$/d') <(sed 's/#.*//' "${scrDir}/install_pkg.lst") >"${scrDir}/install_pkg_filtered.lst"
-    mv "${scrDir}/install_pkg_filtered.lst" "${scrDir}/install_pkg.lst"
+if [ -f "${baseDir}/pkg_black.lst" ]; then
+    grep -v -f <(grep -v '^#' "${baseDir}/pkg_black.lst" | sed 's/#.*//;s/ //g;/^$/d') <(sed 's/#.*//' "${SCR_DIR}/install_pkg.lst") >"${SCR_DIR}/install_pkg_filtered.lst"
+    mv "${baseDir}/install_pkg_filtered.lst" "${SCR_DIR}/install_pkg.lst"
 fi
 
 while read -r pkg deps; do
