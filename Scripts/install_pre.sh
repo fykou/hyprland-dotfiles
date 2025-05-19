@@ -7,7 +7,6 @@ fi
 
 flg_DryRun=${flg_DryRun:-0}
 
-regen_required=0  # Flag to determine if mkinitcpio needs to be run
 
 # systemd-boot configuration
 if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | awk '{if ($1 == "Product:") print $2}')" == "systemd-boot" ]; then
@@ -18,7 +17,6 @@ if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | a
 
     if [ "$entry_count" -ne "$total_count" ]; then
         print_log -g "[bootloader] " -b " :: " "nvidia detected, updating boot options..."
-        regen_required=1
 
         find /boot/loader/entries/ -type f -name "*.conf" | while read -r imgconf; do
             sudo cp "${imgconf}" "${imgconf}.okef.bkp"
@@ -34,12 +32,19 @@ if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | a
     fi
 fi
 
-# Add NVIDIA modprobe options
-NVEA="/etc/modprobe.d/nvidia.conf"
-if [[ ! -f "$NVEA" ]]; then
-    echo "options nvidia_drm modeset=1 fbdev=1" | sudo tee "$NVEA"
-    print_log -sec "kernel modules" -stat "configured" "Added nvidia_drm options to modprobe.d"
-    regen_required=1
+# mkinitcpio and modprobe
+if [ $(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia | wc -l) -gt 0 ]; then
+    if [ $(grep 'MODULES=' /etc/mkinitcpio.conf | grep nvidia | wc -l) -eq 0 ]; then
+        sudo sed -i "/MODULES=/ s/)$/ nvidia nvidia_modeset nvidia_uvm nvidia_drm)/" /etc/mkinitcpio.conf
+        sudo mkinitcpio -P
+    else
+        print_log -y "[mkinitcpio]" -stat "skipped" "mkinitcpio is already configured..."
+    fi
+    if [ $(grep 'options nvidia-drm modeset=1' /etc/modprobe.d/nvidia.conf | wc -l) -eq 0 ]; then
+        echo 'options nvidia-drm modeset=1' | sudo tee -a /etc/modprobe.d/nvidia.conf
+    else
+        print_log -y "[modprobe]" -stat "skipped" "modprobe is already configured..."
+    fi
 fi
 
 # Check if Nouveau is already blacklisted
@@ -57,16 +62,6 @@ else
         print_log -sec "nouveau" -stat "skipped" "Nouveau driver not blacklisted"
     fi
 fi
-
-
-# Regenerate initramfs if changes were made
-if [ "$regen_required" -eq 1 ]; then
-    print_log -sec "initramfs" -stat "regenerating" "Running mkinitcpio..."
-    sudo mkinitcpio -P
-else
-    print_log -sec "initramfs" -stat "skipped" "No changes requiring regeneration of initramfs..."
-fi
-
 
 # Pimp pacman
 if [ -f /etc/pacman.conf ] && [ ! -f /etc/pacman.conf.okef.bkp ]; then
